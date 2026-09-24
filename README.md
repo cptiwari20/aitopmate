@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TopAImate
 
-## Getting Started
+An invite-only community site for people building the AI era: founders, engineers, operators, marketers, SDRs, recruiters and job seekers.
 
-First, run the development server:
+## Run it
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## What's where
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| You want to change…                                    | Edit this                    |
+| ------------------------------------------------------ | ---------------------------- |
+| Brand name, cohort seats, deadline, circles, FAQ       | `src/lib/site.ts`            |
+| Homepage                                               | `src/app/page.tsx`           |
+| Invitation form (steps, questions)                     | `src/components/ApplyForm.tsx` |
+| Where applications are saved                           | `src/app/api/apply/route.ts` |
+| Journal (blog) posts                                   | `content/blog/*.md`          |
+| Colors and fonts                                       | `src/app/globals.css`, `src/app/layout.tsx` |
 
-## Learn More
+## Pages
 
-To learn more about Next.js, take a look at the following resources:
+- `/`: landing page (hero, fear & possibility, circles, what's inside, how invitations work, journal, FAQ)
+- `/apply`: 4-step invitation request form
+- `/circles`: access levels and what unlocks each one
+- `/manifesto`: why the community exists and the house rules
+- `/blog`, `/blog/[slug]`: the SEO journal
+- `/sitemap.xml`, `/robots.txt`, `/opengraph-image`: generated automatically
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Adding a journal post
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Create `content/blog/my-post.md`:
 
-## Deploy on Vercel
+```md
+---
+title: "Your title with the main keyword"
+description: "One or two sentences, shown on Google (about 155 characters)."
+date: 2026-10-01
+tag: Careers
+keywords: ["main keyword", "related keyword"]
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Your post in Markdown…
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+It shows up on the Journal, in the sitemap, and with its own SEO metadata.
+
+## Before launch
+
+1. Set `NEXT_PUBLIC_SITE_URL` to your real domain.
+2. Replace the cohort numbers in `src/lib/site.ts` with real ones.
+3. Applications are saved to `data/applications.jsonl`. That works locally and on a normal server, but **not on Vercel/serverless** (the filesystem there is read-only). Connect a database, Airtable, or an email service in `src/app/api/apply/route.ts`.

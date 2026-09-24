@@ -1,26 +1,136 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-ink: #0b0b0c;
+  --color-ink-2: #121214;
+  --color-ink-3: #1a1a1d;
+  --color-line: #26262a;
+  --color-ivory: #f3efe6;
+  --color-mute: #a19d94;
+  --color-dim: #6d6a64;
+  --color-brass: #d4a55a;
+  --color-brass-2: #e8c486;
+  --color-ember: #e0775a;
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-serif-display);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-ink);
+  color: var(--color-ivory);
+}
+
+::selection {
+  background: var(--color-brass);
+  color: var(--color-ink);
+}
+
+/* Soft film grain + vignette for the private-club feel */
+.grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.glow {
+  background:
+    radial-gradient(60% 50% at 50% 0%, rgba(212, 165, 90, 0.16), transparent 70%),
+    radial-gradient(40% 40% at 85% 20%, rgba(224, 119, 90, 0.08), transparent 70%);
+}
+
+.hairline {
+  background: linear-gradient(90deg, transparent, var(--color-line), transparent);
+  height: 1px;
+}
+
+.text-gradient {
+  background: linear-gradient(180deg, #f7f3ea 0%, #cfc8b8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.fade-up {
+  animation: fade-up 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Journal article typography */
+.prose-journal {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: #d9d4c9;
+}
+.prose-journal h2 {
+  font-family: var(--font-serif-display);
+  font-size: 2rem;
+  line-height: 1.2;
+  color: var(--color-ivory);
+  margin: 2.75rem 0 1rem;
+}
+.prose-journal h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-ivory);
+  margin: 2rem 0 0.75rem;
+}
+.prose-journal p {
+  margin: 0 0 1.35rem;
+}
+.prose-journal ul,
+.prose-journal ol {
+  margin: 0 0 1.5rem 1.25rem;
+}
+.prose-journal ul {
+  list-style: disc;
+}
+.prose-journal ol {
+  list-style: decimal;
+}
+.prose-journal li {
+  margin: 0.4rem 0;
+  padding-left: 0.25rem;
+}
+.prose-journal li::marker {
+  color: var(--color-brass);
+}
+.prose-journal strong {
+  color: var(--color-ivory);
+}
+.prose-journal a {
+  color: var(--color-brass-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-journal blockquote {
+  border-left: 2px solid var(--color-brass);
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  margin: 2rem 0;
+  font-family: var(--font-serif-display);
+  font-size: 1.5rem;
+  line-height: 1.4;
+  color: var(--color-ivory);
+}
+.prose-journal hr {
+  border: 0;
+  height: 1px;
+  background: var(--color-line);
+  margin: 2.5rem 0;
 }
