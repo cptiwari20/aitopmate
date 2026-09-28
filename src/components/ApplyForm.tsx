@@ -18,6 +18,7 @@ type Data = {
   give: string[];
   referral: string;
   agree: boolean;
+  updates: boolean;
 };
 
 const empty: Data = {
@@ -34,6 +35,7 @@ const empty: Data = {
   give: [],
   referral: "",
   agree: false,
+  updates: true,
 };
 
 const steps = ["You", "Your work", "Your perspective", "Commitment"];
@@ -256,6 +258,12 @@ export default function ApplyForm() {
               </span>
             </label>
             {errors.agree && <p className="-mt-3 text-xs text-ember">{errors.agree}</p>}
+            <label className="flex cursor-pointer items-start gap-3 px-1 text-sm">
+              <input type="checkbox" checked={d.updates} onChange={(e) => set("updates", e.target.checked)} className="mt-0.5 h-4 w-4 accent-[var(--color-brass)]" />
+              <span className="leading-relaxed text-dim">
+                Send me cohort news and new Journal essays. Occasional, never sold, unsubscribe any time.
+              </span>
+            </label>
             {status === "error" && (
               <p className="rounded-xl border border-ember/40 bg-ember/10 p-3 text-sm text-ember">
                 Something went wrong sending your application. Please try again, or email {site.email}.

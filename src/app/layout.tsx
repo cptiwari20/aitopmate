@@ -51,7 +51,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} ${serif.variable} antialiased`}>
+    <html lang="en" data-scroll-behavior="smooth" className={`${inter.variable} ${serif.variable} antialiased`}>
       <body className="grain min-h-screen flex flex-col font-sans">
         <Nav />
         <main className="flex-1">{children}</main>
