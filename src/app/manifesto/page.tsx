@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Eyebrow from "@/components/Eyebrow";
+import Photo from "@/components/Photo";
+import { scenes } from "@/lib/photos";
 
 export const metadata: Metadata = {
   title: "Manifesto — AI at a human pace",
@@ -25,6 +27,9 @@ export default function ManifestoPage() {
       <h1 className="font-serif text-5xl leading-[1.05] md:text-7xl">
         AI at a <span className="italic text-brass">human</span> pace.
       </h1>
+      <figure className="mt-10 overflow-hidden rounded-3xl border border-line">
+        <Photo src={scenes.laughing.src} alt={scenes.laughing.alt} sizes="(min-width: 768px) 768px, 100vw" preload className="aspect-[16/9] w-full" />
+      </figure>
       <div className="prose-journal mt-10">
         <p>
           Every week another launch promises to replace a job, a team, a whole industry. Every week, somewhere, a very capable

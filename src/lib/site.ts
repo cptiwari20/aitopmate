@@ -114,6 +114,49 @@ export const inside = [
   },
 ];
 
+// India Rooms — founder sessions across Indian cities, on IST. Edit cities, topics and cadence here.
+export const indiaRooms = [
+  {
+    city: "Indore",
+    name: "Build From Home",
+    topic: "Building an AI company without moving to Bangalore: local talent, lower burn, and customers who pick up the phone.",
+    when: "Monthly · in person",
+  },
+  {
+    city: "Jabalpur",
+    name: "First Builders",
+    topic: "Students and first-time founders from the city's engineering colleges shipping their first real AI products.",
+    when: "Fortnightly · in person",
+  },
+  {
+    city: "Bangalore",
+    name: "Founder Room",
+    topic: "Selling AI to Indian enterprises: long cycles, endless POCs, and how to actually get paid.",
+    when: "Monthly · in person · 12 seats",
+  },
+  {
+    city: "Pune",
+    name: "Services → Product",
+    topic: "For engineers and leaders moving from IT services into building AI products.",
+    when: "Monthly · in person",
+  },
+  {
+    city: "Mumbai · Delhi NCR · Hyderabad",
+    name: "Metro Rooms",
+    topic: "AI for Bharat in Mumbai, India → global SaaS in Delhi NCR, build nights with GCC engineers in Hyderabad.",
+    when: "Monthly · in person",
+  },
+  {
+    city: "Online",
+    name: "Fear & Possibility, IST",
+    topic: "The honest one: what AI means for India's IT jobs — and what we do about it together.",
+    when: "Thursdays · 8 pm IST · English & Hinglish",
+  },
+];
+
+// Cities where members are asking for a room. Shown as "forming next".
+export const indiaFormingCities = ["Bhopal", "Jaipur", "Ahmedabad", "Nagpur", "Chandigarh", "Kochi", "Coimbatore", "Lucknow"];
+
 export const faqs = [
   {
     q: "Why is TopAImate invite-only?",
@@ -130,6 +173,10 @@ export const faqs = [
   {
     q: "What are circles?",
     a: "Every member joins The Commons. Circles — Founders, Engineers, Operators, Go-to-Market, Hiring and Job Seekers — are private spaces that unlock when you meet their bar. You can belong to more than one.",
+  },
+  {
+    q: "Is TopAImate only for the US and Europe?",
+    a: "No. We run India Rooms — in-person founder sessions in Indore, Jabalpur, Bangalore, Pune, Mumbai, Delhi NCR and Hyderabad, plus weekly online sessions on IST — and new cities open when enough members ask. Some of our most honest conversations happen there, especially about what AI means for India's IT services workforce.",
   },
   {
     q: "Is it free?",

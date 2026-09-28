@@ -1,9 +1,22 @@
 import Link from "next/link";
-import { site, circles, inside, faqs } from "@/lib/site";
+import { site, circles, inside, faqs, indiaRooms, indiaFormingCities } from "@/lib/site";
 import { getPosts, formatDate } from "@/lib/posts";
 import SeatMeter from "@/components/SeatMeter";
 import Eyebrow from "@/components/Eyebrow";
 import JsonLd from "@/components/JsonLd";
+import Photo from "@/components/Photo";
+import FaceStack from "@/components/FaceStack";
+import { scenes, faces, people, india } from "@/lib/photos";
+
+const mosaic = [
+  { ...scenes.dinner, label: "Founder dinners", span: "md:col-span-2 md:row-span-2" },
+  { ...scenes.laughing, label: "Off-the-record nights", span: "" },
+  { ...scenes.builders, label: "Build squads", span: "" },
+  { ...india.boardroom, label: "India founder rooms", span: "" },
+  { ...scenes.whiteboard, label: "Working sessions", span: "" },
+];
+
+const insidePhotos = [scenes.cafe, scenes.lounge, scenes.whiteboard, scenes.builders];
 
 const possible = [
   "Which workflows are finally ready for agents — and which still need a person?",
@@ -79,12 +92,37 @@ export default function Home() {
                 Read the manifesto
               </Link>
             </div>
+            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <FaceStack count={7} />
+              <p className="text-sm text-mute sm:text-left">
+                Founders, engineers, operators and career-changers.
+                <br className="hidden sm:block" />
+                <span className="text-dim"> Real names, reviewed one by one.</span>
+              </p>
+            </div>
           </div>
 
           <div className="fade-up mx-auto mt-16 grid max-w-4xl gap-4 [animation-delay:150ms] md:grid-cols-[1fr_1fr_1.3fr]">
             <Stat k="Every" v="application read by a human" />
             <Stat k="≤ 12" v="people per private room" />
             <SeatMeter />
+          </div>
+
+          <div className="fade-up mt-16 grid auto-rows-[180px] grid-cols-2 gap-3 [animation-delay:300ms] md:auto-rows-[210px] md:grid-cols-4">
+            {mosaic.map((m, i) => (
+              <figure key={m.label} className={`group relative overflow-hidden rounded-2xl border border-line ${m.span} ${i === 0 ? "col-span-2 row-span-2" : ""}`}>
+                <Photo
+                  src={m.src}
+                  alt={m.alt}
+                  sizes={i === 0 ? "(min-width: 768px) 50vw, 100vw" : "(min-width: 768px) 25vw, 50vw"}
+                  preload={i === 0}
+                  className="h-full w-full transition duration-700 group-hover:scale-[1.03]"
+                />
+                <figcaption className="absolute bottom-3 left-4 text-sm text-ivory/90">
+                  {i === 0 ? <span className="font-serif text-2xl italic">{m.label}</span> : m.label}
+                </figcaption>
+              </figure>
+            ))}
           </div>
         </div>
       </section>
@@ -103,6 +141,101 @@ export default function Home() {
         <div className="mt-14 grid gap-5 md:grid-cols-2">
           <QuestionCard title="What we can build" accent="text-brass" items={possible} />
           <QuestionCard title="What we're afraid of" accent="text-ember" items={afraid} />
+        </div>
+      </section>
+
+      {/* WHO YOU'LL MEET */}
+      <section className="border-y border-line/60 bg-ink-2/40">
+        <div className="mx-auto max-w-6xl px-5 py-24">
+          <div className="max-w-2xl">
+            <Eyebrow>Who you&apos;ll meet</Eyebrow>
+            <h2 className="font-serif text-4xl leading-tight md:text-5xl">
+              People, not profiles. <span className="italic text-brass">Everyone brings a question.</span>
+            </h2>
+            <p className="mt-5 text-mute">The kinds of people this room is built for — and what keeps them up at night.</p>
+          </div>
+          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {people.map((p) => (
+              <figure key={p.role} className="group overflow-hidden rounded-3xl border border-line bg-ink">
+                <Photo
+                  src={`${p.face}?w=800&h=640&fit=crop&crop=faces`}
+                  alt={`Portrait representing ${p.role.toLowerCase()}`}
+                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  className="aspect-[5/4] w-full transition duration-700 group-hover:scale-[1.02]"
+                />
+                <figcaption className="-mt-10 relative px-6 pb-7">
+                  <p className="text-xs uppercase tracking-[0.2em] text-brass">{p.role}</p>
+                  <blockquote className="mt-3 font-serif text-2xl leading-snug text-ivory">&ldquo;{p.line}&rdquo;</blockquote>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* INDIA ROOMS */}
+      <section id="india" className="mx-auto max-w-6xl scroll-mt-24 px-5 py-24">
+        <div className="grid gap-12 lg:grid-cols-[1.05fr_1fr] lg:items-start">
+          <div className="lg:sticky lg:top-28">
+            <Eyebrow>India Rooms · IST</Eyebrow>
+            <h2 className="font-serif text-4xl leading-tight md:text-5xl">
+              Building from Indore, Jabalpur, Bangalore and Pune.{" "}
+              <span className="italic text-brass">Not just San Francisco.</span>
+            </h2>
+            <p className="mt-5 leading-relaxed text-mute">
+              You don&apos;t have to move to Bangalore to build AI. Some of India&apos;s most determined builders are in
+              Indore, Jabalpur and cities most of the startup world never looks at — and that&apos;s where the fear about
+              AI and jobs is felt most directly too. So we run small in-person founder rooms city by city, plus weekly
+              sessions on IST. In English, and in Hinglish when the conversation wants it.
+            </p>
+            <div className="mt-8 grid grid-cols-2 gap-3">
+              <figure className="relative col-span-2 overflow-hidden rounded-2xl border border-line">
+                <Photo src={india.boardroom.src} alt={india.boardroom.alt} sizes="(min-width: 1024px) 40vw, 100vw" className="aspect-[16/9] w-full" />
+                <figcaption className="absolute bottom-3 left-4 font-serif text-xl italic">India founder sessions</figcaption>
+              </figure>
+              <figure className="relative overflow-hidden rounded-2xl border border-line">
+                <Photo src={india.oneOnOne.src} alt={india.oneOnOne.alt} sizes="(min-width: 1024px) 20vw, 50vw" className="aspect-square w-full" />
+                <figcaption className="absolute bottom-3 left-4 text-sm">Founder 1:1s</figcaption>
+              </figure>
+              <figure className="relative overflow-hidden rounded-2xl border border-line">
+                <Photo src={india.team.src} alt={india.team.alt} sizes="(min-width: 1024px) 20vw, 50vw" className="aspect-square w-full" />
+                <figcaption className="absolute bottom-3 left-4 text-sm">Build nights</figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <ul className="divide-y divide-line overflow-hidden rounded-3xl border border-line bg-ink-2/60">
+            {indiaRooms.map((r) => (
+              <li key={r.city + r.name} className="p-6 transition hover:bg-ink-3 md:p-7">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <p className="text-xs uppercase tracking-[0.2em] text-brass">{r.city}</p>
+                  <p className="text-xs text-dim">{r.when}</p>
+                </div>
+                <h3 className="mt-2 font-serif text-2xl">{r.name}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-mute">{r.topic}</p>
+              </li>
+            ))}
+            <li className="p-6 md:p-7">
+              <p className="text-xs uppercase tracking-[0.2em] text-dim">Forming next</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {indiaFormingCities.map((c) => (
+                  <span key={c} className="rounded-full border border-line px-3 py-1 text-xs text-mute">
+                    {c}
+                  </span>
+                ))}
+                <span className="rounded-full border border-dashed border-brass/50 px-3 py-1 text-xs text-brass">Your city?</span>
+              </div>
+            </li>
+            <li className="flex flex-col items-start justify-between gap-4 bg-brass/5 p-6 sm:flex-row sm:items-center md:p-7">
+              <p className="text-sm text-mute">
+                A new room opens when enough members in a city ask for one.{" "}
+                <span className="text-ivory">Put your city on your application.</span>
+              </p>
+              <Link href="/apply" className="shrink-0 rounded-full bg-ivory px-5 py-2.5 text-sm font-medium text-ink hover:bg-brass-2">
+                Apply →
+              </Link>
+            </li>
+          </ul>
         </div>
       </section>
 
@@ -147,10 +280,18 @@ export default function Home() {
             </h2>
           </div>
           <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-            {inside.map((x) => (
-              <div key={x.title} className="rounded-2xl border border-line bg-ink p-6">
-                <h3 className="font-serif text-2xl">{x.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-mute">{x.body}</p>
+            {inside.map((x, i) => (
+              <div key={x.title} className="overflow-hidden rounded-2xl border border-line bg-ink">
+                <Photo
+                  src={insidePhotos[i].src}
+                  alt={insidePhotos[i].alt}
+                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
+                  className="aspect-[4/3] w-full"
+                />
+                <div className="p-6 pt-4">
+                  <h3 className="font-serif text-2xl">{x.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-mute">{x.body}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -164,9 +305,9 @@ export default function Home() {
               <span className="ml-3"># founders · pricing-when-tokens-get-cheap</span>
             </div>
             <div className="space-y-5 p-6 text-sm">
-              <Msg who="Founder, B2B agents" role="Founders" text="We dropped per-seat pricing last month. Outcome-based is scarier to forecast but customers finally stopped asking 'how many humans does this replace?'" />
-              <Msg who="Head of Ops, fintech" role="Operators" text="From the buyer side: that question is the whole politics of the deal. If your pricing makes my team look redundant, legal and HR get involved and it dies." />
-              <Msg who="Applied AI engineer" role="Engineers" text="Happy to share our eval harness — it's how we proved the 'outcome' part to procurement without hand-waving." />
+              <Msg face={faces[6]} who="Founder, B2B agents" role="Founders" text="We dropped per-seat pricing last month. Outcome-based is scarier to forecast but customers finally stopped asking 'how many humans does this replace?'" />
+              <Msg face={faces[7]} who="Head of Ops, fintech" role="Operators" text="From the buyer side: that question is the whole politics of the deal. If your pricing makes my team look redundant, legal and HR get involved and it dies." />
+              <Msg face={faces[9]} who="Applied AI engineer" role="Engineers" text="Happy to share our eval harness — it's how we proved the 'outcome' part to procurement without hand-waving." />
             </div>
           </div>
         </div>
@@ -249,15 +390,18 @@ export default function Home() {
       </section>
 
       {/* FINAL CTA */}
-      <section className="glow border-t border-line/60">
-        <div className="mx-auto max-w-3xl px-5 py-24 text-center">
+      <section className="relative overflow-hidden border-t border-line/60">
+        <Photo src={scenes.longTable.src} alt={scenes.longTable.alt} sizes="100vw" overlay={false} className="absolute inset-0" />
+        <div className="absolute inset-0 bg-ink/65" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink via-ink/20 to-ink" />
+        <div className="relative mx-auto max-w-3xl px-5 py-32 text-center">
           <h2 className="font-serif text-4xl leading-tight md:text-6xl">
             If you&apos;re building the AI era,
             <br />
             <span className="italic text-brass">there&apos;s a seat for you.</span> For now.
           </h2>
-          <div className="mx-auto mt-10 max-w-sm">
-            <SeatMeter compact />
+          <div className="mx-auto mt-10 max-w-sm text-left backdrop-blur-md">
+            <SeatMeter />
           </div>
           <Link
             href="/apply"
@@ -296,10 +440,10 @@ function QuestionCard({ title, accent, items }: { title: string; accent: string;
   );
 }
 
-function Msg({ who, role, text }: { who: string; role: string; text: string }) {
+function Msg({ face, who, role, text }: { face: string; who: string; role: string; text: string }) {
   return (
     <div className="flex gap-3">
-      <div className="h-8 w-8 shrink-0 rounded-full border border-line bg-ink-3" />
+      <Photo src={`${face}?w=96&h=96&fit=crop&crop=faces`} alt="" sizes="36px" overlay={false} className="h-9 w-9 shrink-0 rounded-full border border-line" />
       <div>
         <p className="text-xs text-dim">
           <span className="text-ivory">{who}</span> · {role} circle

@@ -29,7 +29,10 @@ export default function Footer() {
       </div>
       <div className="mx-auto flex max-w-6xl flex-col justify-between gap-2 border-t border-line/60 px-5 py-6 text-xs text-dim sm:flex-row">
         <span>© {new Date().getFullYear()} {site.name}. Invite only.</span>
-        <span>AI is not stopping. Neither are we — at a human pace.</span>
+        <span>
+          AI is not stopping. Neither are we — at a human pace. · Photos via{" "}
+          <a href="https://unsplash.com" className="hover:text-mute">Unsplash</a>
+        </span>
       </div>
     </footer>
   );

@@ -134,3 +134,8 @@ body {
   background: var(--color-line);
   margin: 2.5rem 0;
 }
+
+/* Warm grade for photography so stock images match the brand */
+.photo-warm {
+  filter: saturate(0.82) contrast(1.04) sepia(0.1);
+}

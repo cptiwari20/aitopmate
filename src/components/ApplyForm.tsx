@@ -167,7 +167,7 @@ export default function ApplyForm() {
               <input className={input} value={d.linkedin} onChange={(e) => set("linkedin", e.target.value)} placeholder="https://linkedin.com/in/…" />
             </Field>
             <Field label="City, country" optional>
-              <input className={input} value={d.location} onChange={(e) => set("location", e.target.value)} placeholder="Bengaluru, India" />
+              <input className={input} value={d.location} onChange={(e) => set("location", e.target.value)} placeholder="Indore, India" />
             </Field>
           </Fieldset>
         )}
