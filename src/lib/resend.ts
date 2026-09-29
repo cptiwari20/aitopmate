@@ -162,8 +162,6 @@ ${a.fear}`;
   };
 }
 
-export const applicationEmails = (a: Application) => [teamEmail(a), applicantEmail(a)];
-
 // Errors carry Resend's short error name (e.g. "restricted_api_key") so the API route can
 // report *why* something failed without exposing secrets.
 export class ResendStepError extends Error {
@@ -187,10 +185,13 @@ export function resendStatus() {
   };
 }
 
+// Sent separately so a problem with the applicant's address can't block the team notification.
+// Only a failed team email throws: that email is a complete record of the application.
 export async function sendApplicationEmails(a: Application) {
   if (!resend) throw new ResendStepError("email:missing_api_key", "RESEND_API_KEY is not set");
-  const { error } = await resend.batch.send(applicationEmails(a));
-  if (error) throw fail("email", error);
+  const [team, applicant] = await Promise.all([resend.emails.send(teamEmail(a)), resend.emails.send(applicantEmail(a))]);
+  if (applicant.error) console.error(`[resend] ${a.ref} confirmation email failed: ${applicant.error.message}`);
+  if (team.error) throw fail("email", team.error);
 }
 
 /* ---------- list ---------- */
