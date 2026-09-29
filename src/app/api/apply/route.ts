@@ -2,13 +2,20 @@ import { NextResponse } from "next/server";
 import { appendFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { randomBytes } from "node:crypto";
-import { resend, sendApplicationEmails, addApplicantToList, type Application } from "@/lib/resend";
+import {
+  sendApplicationEmails,
+  addApplicantToList,
+  resendStatus,
+  ResendStepError,
+  type Application,
+} from "@/lib/resend";
 
 // Each application is:
 //  - added to the Resend "Applicants" list (the source of truth in production),
-//  - emailed to the team and confirmed to the applicant via Resend,
+//  - emailed to the team (with every answer) and confirmed to the applicant via Resend,
 //  - appended to /data/applications.jsonl as a local backup when the filesystem allows it
-//    (it doesn't on serverless hosts like Vercel, which is fine once Resend is configured).
+//    (it doesn't on serverless hosts like Vercel).
+// The application counts as saved if ANY of the three worked — the team email alone is a full record.
 
 const str = (v: unknown, max = 2000) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 const list = (v: unknown) => (Array.isArray(v) ? v.filter((x) => typeof x === "string").slice(0, 10) : []);
@@ -49,21 +56,26 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 422 });
   }
 
-  // The list comes first: if we can't record the application anywhere, the applicant must be told.
-  const [listed, local] = await Promise.allSettled([
-    resend ? addApplicantToList(app) : Promise.reject(new Error("RESEND_API_KEY is not set")),
+  const [listed, emailed, local] = await Promise.allSettled([
+    addApplicantToList(app),
+    sendApplicationEmails(app),
     saveLocally(app),
   ]);
-  if (listed.status === "rejected") console.error(`[apply] ${app.ref} list:`, listed.reason);
-  if (local.status === "rejected" && listed.status === "rejected") {
-    console.error(`[apply] ${app.ref} local:`, local.reason);
-    return NextResponse.json({ error: "Could not save application" }, { status: 500 });
-  }
+  const failures = [listed, emailed, local]
+    .filter((r): r is PromiseRejectedResult => r.status === "rejected")
+    .map((r) => r.reason);
+  failures.forEach((e) => console.error(`[apply] ${app.ref}:`, e));
 
-  // Emails are best-effort: the application is already recorded, so a send failure is logged, not surfaced.
-  if (resend) {
-    await sendApplicationEmails(app).catch((e) => console.error(`[apply] ${app.ref} email:`, e));
+  if (failures.length === 3) {
+    // Only Resend's short error codes are returned (e.g. "list:restricted_api_key"), never secrets.
+    const reasons = failures.filter((e) => e instanceof ResendStepError).map((e) => e.code);
+    return NextResponse.json({ error: "Could not save application", reasons }, { status: 500 });
   }
 
   return NextResponse.json({ ref: app.ref });
+}
+
+// Health check: shows which Resend settings are present (true/false only, never their values).
+export function GET() {
+  return NextResponse.json({ resend: resendStatus() });
 }

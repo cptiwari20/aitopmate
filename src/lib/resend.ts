@@ -164,16 +164,39 @@ ${a.fear}`;
 
 export const applicationEmails = (a: Application) => [teamEmail(a), applicantEmail(a)];
 
+// Errors carry Resend's short error name (e.g. "restricted_api_key") so the API route can
+// report *why* something failed without exposing secrets.
+export class ResendStepError extends Error {
+  constructor(
+    public code: string,
+    message: string,
+  ) {
+    super(message);
+  }
+}
+
+const fail = (step: string, error: { name?: string; message: string }) =>
+  new ResendStepError(`${step}:${error.name ?? "error"}`, `Resend ${step} failed: ${error.message}`);
+
+export function resendStatus() {
+  return {
+    apiKey: Boolean(apiKey),
+    from: Boolean(process.env.RESEND_FROM),
+    teamEmails: Boolean(process.env.TEAM_EMAILS),
+    segmentId: Boolean(segmentId),
+  };
+}
+
 export async function sendApplicationEmails(a: Application) {
-  if (!resend) throw new Error("RESEND_API_KEY is not set");
+  if (!resend) throw new ResendStepError("email:missing_api_key", "RESEND_API_KEY is not set");
   const { error } = await resend.batch.send(applicationEmails(a));
-  if (error) throw new Error(`Resend email failed: ${error.message}`);
+  if (error) throw fail("email", error);
 }
 
 /* ---------- list ---------- */
 
 export async function addApplicantToList(a: Application) {
-  if (!resend) throw new Error("RESEND_API_KEY is not set");
+  if (!resend) throw new ResendStepError("list:missing_api_key", "RESEND_API_KEY is not set");
   const { firstName, lastName } = splitName(a.name);
   const properties: Record<(typeof CONTACT_PROPERTIES)[number], string> = {
     application_ref: a.ref,
@@ -187,28 +210,28 @@ export async function addApplicantToList(a: Application) {
     referral: a.referral,
     applied_at: a.submittedAt,
   };
+  const base = { email: a.email, firstName, lastName, unsubscribed: !a.updates };
+  const segments = segmentId ? [{ id: segmentId }] : undefined;
 
-  const created = await resend.contacts.create({
-    email: a.email,
-    firstName,
-    lastName,
-    unsubscribed: !a.updates,
-    properties,
-    segments: segmentId ? [{ id: segmentId }] : undefined,
-  });
+  const created = await resend.contacts.create({ ...base, properties, segments });
   if (!created.error) return;
 
-  // Most likely the person applied before — update the existing contact instead.
-  const updated = await resend.contacts.update({
-    email: a.email,
-    firstName,
-    lastName,
-    unsubscribed: !a.updates,
-    properties,
-  });
-  if (updated.error) throw new Error(`Resend contact failed: ${created.error.message} / ${updated.error.message}`);
-  if (segmentId) {
-    const added = await resend.contacts.segments.add({ email: a.email, segmentId });
-    if (added.error) console.warn(`[resend] could not add ${a.ref} to segment: ${added.error.message}`);
+  // The person may have applied before — update the existing contact instead.
+  const updated = await resend.contacts.update({ ...base, properties });
+  if (!updated.error) {
+    if (segmentId) {
+      const added = await resend.contacts.segments.add({ email: a.email, segmentId });
+      if (added.error) console.warn(`[resend] could not add ${a.ref} to segment: ${added.error.message}`);
+    }
+    return;
   }
+
+  // Custom properties or the segment may not exist yet (`npm run resend:setup` not run).
+  // Still get the person onto the list with just their name and email.
+  const minimal = await resend.contacts.create(base);
+  if (!minimal.error) {
+    console.warn(`[resend] ${a.ref} saved without properties: ${created.error.message}`);
+    return;
+  }
+  throw fail("list", created.error);
 }
